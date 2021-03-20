@@ -1,10 +1,12 @@
 package com.gamesharp.tictactoe
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -33,7 +35,9 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Playground()
+                        Playground(onClick = {
+                            Toast.makeText(this@MainActivity, it.toString(), Toast.LENGTH_SHORT).show()
+                        })
                     }
                 }
             }
@@ -42,53 +46,58 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Playground() {
+fun Playground(onClick: (Int) -> Unit) {
     Box {
         Lines()
-        Shapes()
+        Shapes(onClick)
     }
 }
 
 @Composable
-fun Shapes() {
+fun Shapes(onClick: (Int) -> Unit) {
     Column {
         Row(
             Modifier
                 .height(CELL_SIZE)
                 .fillMaxWidth()
         ) {
-            Shape(ShapeState.Cross)
-            Shape()
-            Shape()
+            Shape(ShapeState.Cross, 1, onClick)
+            Shape(ShapeState.Circle, 2, onClick)
+            Shape(ShapeState.Circle, 3, onClick)
         }
         Row(
             Modifier
                 .height(CELL_SIZE)
                 .fillMaxWidth()) {
-            Shape()
-            Shape(ShapeState.Cross)
-            Shape()
+            Shape(ShapeState.Circle, 4, onClick)
+            Shape(ShapeState.Cross, 5, onClick)
+            Shape(ShapeState.Circle, 6, onClick)
         }
         Row(
             Modifier
                 .height(CELL_SIZE)
                 .fillMaxWidth()
         ) {
-            Shape(ShapeState.Empty)
-            Shape()
-            Shape(ShapeState.Cross)
+            Shape(ShapeState.Empty, 7, onClick)
+            Shape(ShapeState.Circle, 8, onClick)
+            Shape(ShapeState.Cross, 9, onClick)
         }
     }
 }
 
 @Composable
-fun Shape(state: ShapeState = ShapeState.Circle) {
+fun Shape(
+    state: ShapeState = ShapeState.Circle,
+    cellNumber: Int,
+    onClick: (Int) -> Unit
+) {
     Row(
         modifier = Modifier
             .size(CELL_SIZE)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick(cellNumber) },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceAround,
     ) {
         when (state) {
             is ShapeState.Empty -> Unit
