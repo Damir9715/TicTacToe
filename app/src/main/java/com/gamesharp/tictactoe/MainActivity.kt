@@ -37,9 +37,14 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.surface, modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Info("Start game 'X'", 1, 0)
-                        Playground(onClick = {
-                            this@MainActivity.toast(it.toString())
-                        })
+                        var a = false
+                        if (a) {
+                            Playground(onClick = {
+                                this@MainActivity.toast(it.toString())
+                            })
+                        } else {
+                            Outcome()
+                        }
                         Button(
                             colors = ButtonDefaults.buttonColors(MaterialTheme.colors.onSurface),
                             modifier = Modifier
@@ -50,13 +55,31 @@ class MainActivity : ComponentActivity() {
                             Text(
                                 text = "Retry",
                                 fontSize = 20.sp,
-                                color = MaterialTheme.colors.onSecondary
+                                color = MaterialTheme.colors.secondary
                             )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Outcome() {
+    Column(
+        modifier = Modifier
+            .size(PLAYGROUND_SIZE)
+            .padding(top = 50.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier.size(200.dp),
+            painter = painterResource(R.drawable.ic_cross),
+            contentDescription = null,
+        )
+        Text(text = "WINS!", fontSize = 40.sp, color = MaterialTheme.colors.secondary)
     }
 }
 
@@ -114,34 +137,34 @@ fun Shapes(onClick: (Int) -> Unit) {
                 .height(CELL_SIZE)
                 .fillMaxWidth()
         ) {
-            Shape(ShapeState.Cross, 1, onClick)
-            Shape(ShapeState.Circle, 2, onClick)
-            Shape(ShapeState.Circle, 3, onClick)
+            Shape(Cell.Cross, 1, onClick)
+            Shape(Cell.Circle, 2, onClick)
+            Shape(Cell.Circle, 3, onClick)
         }
         Row(
             Modifier
                 .height(CELL_SIZE)
                 .fillMaxWidth()
         ) {
-            Shape(ShapeState.Circle, 4, onClick)
-            Shape(ShapeState.Cross, 5, onClick)
-            Shape(ShapeState.Circle, 6, onClick)
+            Shape(Cell.Circle, 4, onClick)
+            Shape(Cell.Cross, 5, onClick)
+            Shape(Cell.Circle, 6, onClick)
         }
         Row(
             Modifier
                 .height(CELL_SIZE)
                 .fillMaxWidth()
         ) {
-            Shape(ShapeState.Empty, 7, onClick)
-            Shape(ShapeState.Circle, 8, onClick)
-            Shape(ShapeState.Cross, 9, onClick)
+            Shape(Cell.Empty, 7, onClick)
+            Shape(Cell.Circle, 8, onClick)
+            Shape(Cell.Cross, 9, onClick)
         }
     }
 }
 
 @Composable
 fun Shape(
-    state: ShapeState = ShapeState.Circle,
+    state: Cell = Cell.Circle,
     cellNumber: Int,
     onClick: (Int) -> Unit
 ) {
@@ -154,15 +177,15 @@ fun Shape(
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
         when (state) {
-            is ShapeState.Empty -> Unit
-            is ShapeState.Circle -> {
+            is Cell.Empty -> Unit
+            is Cell.Circle -> {
                 Image(
                     modifier = Modifier.size(FIGURE_SIZE),
                     painter = painterResource(R.drawable.ic_circle),
                     contentDescription = null
                 )
             }
-            is ShapeState.Cross -> {
+            is Cell.Cross -> {
                 Image(
                     modifier = Modifier.size(FIGURE_SIZE),
                     painter = painterResource(R.drawable.ic_cross),
@@ -212,8 +235,8 @@ fun Lines() {
     }
 }
 
-sealed class ShapeState {
-    object Empty : ShapeState()
-    object Circle : ShapeState()
-    object Cross : ShapeState()
+sealed class Cell {
+    object Empty : Cell()
+    object Circle : Cell()
+    object Cross : Cell()
 }
