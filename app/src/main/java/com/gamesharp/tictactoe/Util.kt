@@ -9,7 +9,7 @@ fun Activity.toast(text: String, length: Int = Toast.LENGTH_SHORT) =
 
 fun checkGameState(list: List<Cell>): GameCheckResult {
     if (list.filterNot { it == Cell.Empty }.count() < 5) {
-        return GameCheckResult.Continue
+        return GameCheckResult.Continue(LineState.Empty)
     }
 
     //rows
@@ -44,9 +44,9 @@ fun checkGameState(list: List<Cell>): GameCheckResult {
 
     //end
     return if (list.filter { it == Cell.Empty }.count() == 0) {
-        GameCheckResult.Draw
+        GameCheckResult.Draw(LineState.Empty)
     } else {
-        GameCheckResult.Continue
+        GameCheckResult.Continue(LineState.Empty)
     }
 }
 
@@ -54,17 +54,18 @@ fun toResult(cell: Cell, state: LineState) = when (cell) {
     is Cell.Circle -> GameCheckResult.Circle(state)
     is Cell.Cross -> GameCheckResult.Cross(state)
     //never
-    else -> GameCheckResult.Continue
+    else -> GameCheckResult.Continue(LineState.Empty)
 }
 
 sealed class GameCheckResult {
-    object Continue : GameCheckResult()
+    data class Continue(val state: LineState) : GameCheckResult()
     data class Circle(val state: LineState) : GameCheckResult()
     data class Cross(val state: LineState) : GameCheckResult()
-    object Draw : GameCheckResult()
+    data class Draw(val state: LineState) : GameCheckResult()
 }
 
 sealed class LineState {
+    object Empty : LineState()
     object Row1 : LineState()
     object Row2 : LineState()
     object Row3 : LineState()

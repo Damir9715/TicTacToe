@@ -18,6 +18,7 @@ fun Figure(
     viewModel: MainViewModel,
     index: Int,
 ) {
+    //fixme recomposes for each click, skip not clicked cells
     val board: List<Cell> by viewModel.board.collectAsState()
     val cell = board[index]
 
@@ -25,7 +26,7 @@ fun Figure(
         modifier = Modifier
             .size(CELL_SIZE)
             .fillMaxWidth()
-            .clickable {
+            .clickable(enabled = viewModel.isFigureClickable.collectAsState().value) {
                 if (cell == Cell.Empty) {
                     viewModel.onClick(ClickData(index, viewModel.currentPlayer.value))
                 }

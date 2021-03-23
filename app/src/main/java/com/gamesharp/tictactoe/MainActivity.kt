@@ -6,11 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gamesharp.tictactoe.ui.components.Info
+import com.gamesharp.tictactoe.ui.components.Outcome
 import com.gamesharp.tictactoe.ui.components.Playground
 import com.gamesharp.tictactoe.ui.theme.TicTacToeTheme
 
@@ -30,23 +32,21 @@ class MainActivity : ComponentActivity() {
             TicTacToeTheme {
                 Surface(color = MaterialTheme.colors.surface, modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Info("Start game 'X'", 1, 0)
-//                        var a = true
-//                        if (a) {
-                        Playground(
-                            viewModel,
-                            GameCheckResult.Circle(LineState.Cross1)
-                        )
-//                        } else {
-//                            Outcome()
-//                        }
+                        Info(viewModel)
+                        if (viewModel.isGameEnded.collectAsState().value) {
+                            Outcome(viewModel)
+                        } else {
+                            Playground(viewModel)
+                        }
                         Button(
                             colors = ButtonDefaults.buttonColors(MaterialTheme.colors.onSurface),
                             modifier = Modifier
                                 .padding(top = 40.dp)
                                 .height(50.dp)
                                 .width(100.dp),
-                            onClick = { this@MainActivity.toast("retry") }) {
+                            enabled = viewModel.isResetClickable.collectAsState().value,
+                            onClick = viewModel::onReset
+                        ) {
                             Text(
                                 text = "Retry",
                                 fontSize = 20.sp,
