@@ -1,20 +1,23 @@
 package com.gamesharp.tictactoe
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gamesharp.tictactoe.ui.theme.TicTacToeTheme
 
 private val LINE_WIDTH = 8.dp
@@ -23,21 +26,33 @@ private val CELL_SIZE = 108.dp
 private val FIGURE_SIZE = 80.dp
 
 class MainActivity : ComponentActivity() {
+
+    val viewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             TicTacToeTheme {
-                Surface(color = MaterialTheme.colors.surface) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(20.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                Surface(color = MaterialTheme.colors.surface, modifier = Modifier.fillMaxSize()) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Info("Start game 'X'", 1, 0)
                         Playground(onClick = {
-                            Toast.makeText(this@MainActivity, it.toString(), Toast.LENGTH_SHORT).show()
+                            this@MainActivity.toast(it.toString())
                         })
+                        Button(
+                            colors = ButtonDefaults.buttonColors(MaterialTheme.colors.onSurface),
+                            modifier = Modifier
+                                .padding(top = 40.dp)
+                                .height(50.dp)
+                                .width(100.dp),
+                            onClick = { this@MainActivity.toast("retry") }) {
+                            Text(
+                                text = "Retry",
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colors.onSecondary
+                            )
+                        }
                     }
                 }
             }
@@ -46,8 +61,46 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun Info(infoState: String, crossScore: Int, circleScore: Int) {
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(30.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Surface(elevation = 5.dp) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .height(70.dp)
+                        .width(90.dp)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "X - $crossScore", color = Color.Black, fontSize = 30.sp)
+                }
+            }
+            Surface(elevation = 5.dp) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .height(70.dp)
+                        .width(90.dp)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "O - $circleScore", color = Color.Black, fontSize = 30.sp)
+                }
+            }
+        }
+        Text(text = infoState, color = Color.White, fontSize = 18.sp)
+    }
+}
+
+@Composable
 fun Playground(onClick: (Int) -> Unit) {
-    Box {
+    Box(Modifier.padding(top = 50.dp), contentAlignment = Alignment.Center) {
         Lines()
         Shapes(onClick)
     }
@@ -55,7 +108,7 @@ fun Playground(onClick: (Int) -> Unit) {
 
 @Composable
 fun Shapes(onClick: (Int) -> Unit) {
-    Column {
+    Column(modifier = Modifier.size(PLAYGROUND_SIZE)) {
         Row(
             Modifier
                 .height(CELL_SIZE)
@@ -68,7 +121,8 @@ fun Shapes(onClick: (Int) -> Unit) {
         Row(
             Modifier
                 .height(CELL_SIZE)
-                .fillMaxWidth()) {
+                .fillMaxWidth()
+        ) {
             Shape(ShapeState.Circle, 4, onClick)
             Shape(ShapeState.Cross, 5, onClick)
             Shape(ShapeState.Circle, 6, onClick)
