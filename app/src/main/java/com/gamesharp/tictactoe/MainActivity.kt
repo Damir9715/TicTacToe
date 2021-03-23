@@ -4,30 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gamesharp.tictactoe.ui.components.Info
+import com.gamesharp.tictactoe.ui.components.Playground
 import com.gamesharp.tictactoe.ui.theme.TicTacToeTheme
 
-private val LINE_WIDTH = 8.dp
-private val PLAYGROUND_SIZE = 324.dp
-private val CELL_SIZE = 108.dp
-private val FIGURE_SIZE = 80.dp
+val LINE_WIDTH = 8.dp
+val PLAYGROUND_SIZE = 324.dp
+val CELL_SIZE = 108.dp
+val FIGURE_SIZE = 80.dp
 
 class MainActivity : ComponentActivity() {
 
-    val viewModel by viewModels<MainViewModel>()
+    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +31,15 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.surface, modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Info("Start game 'X'", 1, 0)
-                        var a = false
-                        if (a) {
-                            Playground(onClick = {
-                                this@MainActivity.toast(it.toString())
-                            })
-                        } else {
-                            Outcome()
-                        }
+//                        var a = true
+//                        if (a) {
+                        Playground(
+                            viewModel,
+                            GameCheckResult.Circle(LineState.Cross1)
+                        )
+//                        } else {
+//                            Outcome()
+//                        }
                         Button(
                             colors = ButtonDefaults.buttonColors(MaterialTheme.colors.onSurface),
                             modifier = Modifier
@@ -63,180 +58,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-@Composable
-fun Outcome() {
-    Column(
-        modifier = Modifier
-            .size(PLAYGROUND_SIZE)
-            .padding(top = 50.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            modifier = Modifier.size(200.dp),
-            painter = painterResource(R.drawable.ic_cross),
-            contentDescription = null,
-        )
-        Text(text = "WINS!", fontSize = 40.sp, color = MaterialTheme.colors.secondary)
-    }
-}
-
-@Composable
-fun Info(infoState: String, crossScore: Int, circleScore: Int) {
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(30.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Surface(elevation = 5.dp) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .height(70.dp)
-                        .width(90.dp)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "X - $crossScore", color = Color.Black, fontSize = 30.sp)
-                }
-            }
-            Surface(elevation = 5.dp) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(5.dp))
-                        .height(70.dp)
-                        .width(90.dp)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "O - $circleScore", color = Color.Black, fontSize = 30.sp)
-                }
-            }
-        }
-        Text(text = infoState, color = Color.White, fontSize = 18.sp)
-    }
-}
-
-@Composable
-fun Playground(onClick: (Int) -> Unit) {
-    Box(Modifier.padding(top = 50.dp), contentAlignment = Alignment.Center) {
-        Lines()
-        Shapes(onClick)
-    }
-}
-
-@Composable
-fun Shapes(onClick: (Int) -> Unit) {
-    Column(modifier = Modifier.size(PLAYGROUND_SIZE)) {
-        Row(
-            Modifier
-                .height(CELL_SIZE)
-                .fillMaxWidth()
-        ) {
-            Shape(Cell.Cross, 1, onClick)
-            Shape(Cell.Circle, 2, onClick)
-            Shape(Cell.Circle, 3, onClick)
-        }
-        Row(
-            Modifier
-                .height(CELL_SIZE)
-                .fillMaxWidth()
-        ) {
-            Shape(Cell.Circle, 4, onClick)
-            Shape(Cell.Cross, 5, onClick)
-            Shape(Cell.Circle, 6, onClick)
-        }
-        Row(
-            Modifier
-                .height(CELL_SIZE)
-                .fillMaxWidth()
-        ) {
-            Shape(Cell.Empty, 7, onClick)
-            Shape(Cell.Circle, 8, onClick)
-            Shape(Cell.Cross, 9, onClick)
-        }
-    }
-}
-
-@Composable
-fun Shape(
-    state: Cell = Cell.Circle,
-    cellNumber: Int,
-    onClick: (Int) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .size(CELL_SIZE)
-            .fillMaxWidth()
-            .clickable { onClick(cellNumber) },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
-    ) {
-        when (state) {
-            is Cell.Empty -> Unit
-            is Cell.Circle -> {
-                Image(
-                    modifier = Modifier.size(FIGURE_SIZE),
-                    painter = painterResource(R.drawable.ic_circle),
-                    contentDescription = null
-                )
-            }
-            is Cell.Cross -> {
-                Image(
-                    modifier = Modifier.size(FIGURE_SIZE),
-                    painter = painterResource(R.drawable.ic_cross),
-                    contentDescription = null
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun Lines() {
-    Column(
-        modifier = Modifier.size(PLAYGROUND_SIZE),
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(LINE_WIDTH)
-                .background(MaterialTheme.colors.onSurface)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(LINE_WIDTH)
-                .background(MaterialTheme.colors.onSurface)
-        )
-    }
-
-    Row(
-        modifier = Modifier.size(PLAYGROUND_SIZE),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Box(
-            modifier = Modifier
-                .width(LINE_WIDTH)
-                .fillMaxHeight()
-                .background(MaterialTheme.colors.onSurface)
-        )
-        Box(
-            modifier = Modifier
-                .width(LINE_WIDTH)
-                .fillMaxHeight()
-                .background(MaterialTheme.colors.onSurface)
-        )
-    }
-}
-
-sealed class Cell {
-    object Empty : Cell()
-    object Circle : Cell()
-    object Cross : Cell()
 }
