@@ -2,6 +2,7 @@ package com.gamesharp.tictactoe
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gamesharp.tictactoe.model.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -10,6 +11,9 @@ import kotlinx.coroutines.launch
 private const val ENDING_DELAY = 1000L
 
 class MainViewModel : ViewModel() {
+
+    val board = MutableStateFlow(Board())
+
     private val gameState = MutableStateFlow<GameState>(GameState.Start)
     val setLineColor: MutableStateFlow<CellState> = MutableStateFlow(CellState.Empty)
     val drawLine: MutableStateFlow<LineState> = MutableStateFlow(LineState.Empty)
@@ -20,18 +24,25 @@ class MainViewModel : ViewModel() {
     val isFigureClickable = MutableStateFlow(true)
     val isGameEnded = MutableStateFlow(false)
 
-    private val emptyBoard = listOf<CellState>(
-        CellState.Empty, CellState.Empty, CellState.Empty,
-        CellState.Empty, CellState.Empty, CellState.Empty,
-        CellState.Empty, CellState.Empty, CellState.Empty,
-    )
-
-    val board = MutableStateFlow(emptyBoard)
-
-    fun onClick(clickData: ClickData) {
+    fun onClick(index: Int, cellState: CellState) {
         viewModelScope.launch {
-            gameState.emit(GameState.Game)
+            updateCurrentPlayer()
+            setCell(index, cellState)
+            updateBoardState()
+        }
+    }
 
+    private fun setCell(index: Int, cellState: CellState) {
+        viewModelScope.launch {
+            val temp = mutableListOf<CellState>()
+            temp.addAll(board.value.board)
+            temp[index] = cellState
+            board.emit(Board(temp))
+        }
+    }
+
+    private fun updateCurrentPlayer() {
+        viewModelScope.launch {
             if (currentPlayer.value == CellState.Cross) {
                 currentPlayer.emit(CellState.Circle)
                 gameStateText.emit("O Turn")
@@ -39,14 +50,14 @@ class MainViewModel : ViewModel() {
                 currentPlayer.emit(CellState.Cross)
                 gameStateText.emit("X Turn")
             }
-            val temp = mutableListOf<CellState>()
-            temp.addAll(board.value)
-            temp[clickData.index] = clickData.cellState
-            board.emit(temp)
+        }
+    }
 
-            when (val result = checkGameState(board.value)) {
-                is GameCheckResult.Incomplete -> Unit
-                is GameCheckResult.Circle -> {
+    private fun updateBoardState() {
+        viewModelScope.launch {
+            when (val result = board.value.boardState) {
+                is BoardState.Incomplete -> gameState.emit(GameState.Game)
+                is BoardState.CircleWon -> {
                     setLineColor.emit(CellState.Circle)
                     drawLine.emit(result.state)
 
@@ -54,7 +65,7 @@ class MainViewModel : ViewModel() {
                     delay(ENDING_DELAY)
                     gameState.emit(GameState.Result)
                 }
-                is GameCheckResult.Cross -> {
+                is BoardState.CrossWon -> {
                     setLineColor.emit(CellState.Cross)
                     drawLine.emit(result.state)
 
@@ -62,7 +73,7 @@ class MainViewModel : ViewModel() {
                     delay(ENDING_DELAY)
                     gameState.emit(GameState.Result)
                 }
-                is GameCheckResult.Draw -> {
+                is BoardState.Draw -> {
                     setLineColor.emit(CellState.Empty)
 
                     gameState.emit(GameState.Ending)
@@ -84,7 +95,7 @@ class MainViewModel : ViewModel() {
             gameState.collect {
                 when (it) {
                     is GameState.Start -> {
-                        board.emit(emptyBoard)
+                        board.emit(Board())
                         drawLine.emit(LineState.Empty)
                         gameStateText.emit("X Turn")
                         isGameEnded.emit(false)
@@ -111,18 +122,3 @@ class MainViewModel : ViewModel() {
         }
     }
 }
-
-sealed class GameState {
-    object Start : GameState()
-    object Game : GameState()
-    object Ending : GameState()
-    object Result : GameState()
-}
-
-sealed class CellState {
-    object Empty : CellState()
-    object Circle : CellState()
-    object Cross : CellState()
-}
-
-data class ClickData(val index: Int, val cellState: CellState)

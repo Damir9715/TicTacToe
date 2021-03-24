@@ -12,10 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gamesharp.tictactoe.CellState
-import com.gamesharp.tictactoe.LineState
 import com.gamesharp.tictactoe.MainViewModel
 import com.gamesharp.tictactoe.PLAYGROUND_SIZE
+import com.gamesharp.tictactoe.model.CellState
+import com.gamesharp.tictactoe.model.LineState
 
 @Composable
 fun Playground() {

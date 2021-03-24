@@ -10,8 +10,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.gamesharp.tictactoe.*
+import com.gamesharp.tictactoe.model.CellState
+import kotlinx.coroutines.coroutineScope
+import kotlin.coroutines.coroutineContext
 
 @Composable
 fun Figure(
@@ -19,8 +26,8 @@ fun Figure(
     index: Int,
 ) {
     //fixme recomposes for each click, skip not clicked cells
-    val board: List<CellState> by viewModel.board.collectAsState()
-    val cell = board[index]
+    val board by viewModel.board.collectAsState()
+    val cell = board.board[index]
 
     Box(
         modifier = Modifier
@@ -28,7 +35,7 @@ fun Figure(
             .fillMaxWidth()
             .clickable(enabled = viewModel.isFigureClickable.collectAsState().value) {
                 if (cell == CellState.Empty) {
-                    viewModel.onClick(ClickData(index, viewModel.currentPlayer.value))
+                    viewModel.onClick(index, viewModel.currentPlayer.value)
                 }
             },
         contentAlignment = Alignment.Center

@@ -12,10 +12,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gamesharp.tictactoe.CellState
 import com.gamesharp.tictactoe.MainViewModel
 import com.gamesharp.tictactoe.PLAYGROUND_SIZE
 import com.gamesharp.tictactoe.R
+import com.gamesharp.tictactoe.model.CellState
 
 @Composable
 fun Outcome() {
