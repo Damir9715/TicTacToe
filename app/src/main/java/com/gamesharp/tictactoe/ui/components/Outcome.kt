@@ -1,10 +1,7 @@
 package com.gamesharp.tictactoe.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,16 +11,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.gamesharp.tictactoe.Cell
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gamesharp.tictactoe.CellState
 import com.gamesharp.tictactoe.MainViewModel
 import com.gamesharp.tictactoe.PLAYGROUND_SIZE
 import com.gamesharp.tictactoe.R
 
 @Composable
-fun Outcome(viewModel: MainViewModel) {
+fun Outcome() {
+    val viewModel: MainViewModel = viewModel()
+    //todo review it
     val drawableRes: Int = when (viewModel.setLineColor.collectAsState().value) {
-        is Cell.Circle -> R.drawable.ic_circle
-        else -> R.drawable.ic_cross
+        is CellState.Circle -> R.drawable.ic_circle
+        is CellState.Cross -> R.drawable.ic_cross
+        else -> -1
     }
 
     Column(
@@ -33,11 +34,27 @@ fun Outcome(viewModel: MainViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            modifier = Modifier.size(200.dp),
-            painter = painterResource(drawableRes),
-            contentDescription = null,
-        )
-        Text(text = "WINS!", fontSize = 40.sp, color = MaterialTheme.colors.secondary)
+        if (drawableRes == -1) {
+            Row {
+                Image(
+                    modifier = Modifier.size(200.dp),
+                    painter = painterResource(R.drawable.ic_cross),
+                    contentDescription = null,
+                )
+                Image(
+                    modifier = Modifier.size(200.dp),
+                    painter = painterResource(R.drawable.ic_circle),
+                    contentDescription = null,
+                )
+            }
+            Text(text = "DRAW!", fontSize = 40.sp, color = MaterialTheme.colors.secondary)
+        } else {
+            Image(
+                modifier = Modifier.size(200.dp),
+                painter = painterResource(drawableRes),
+                contentDescription = null,
+            )
+            Text(text = "WINS!", fontSize = 40.sp, color = MaterialTheme.colors.secondary)
+        }
     }
 }

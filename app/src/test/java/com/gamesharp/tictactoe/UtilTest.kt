@@ -7,90 +7,90 @@ import org.junit.Test
 class UtilTest {
 
     private val emptyBoard = listOf(
-        Cell.Empty, Cell.Empty, Cell.Empty,
-        Cell.Empty, Cell.Empty, Cell.Empty,
-        Cell.Empty, Cell.Empty, Cell.Empty,
+        CellState.Empty, CellState.Empty, CellState.Empty,
+        CellState.Empty, CellState.Empty, CellState.Empty,
+        CellState.Empty, CellState.Empty, CellState.Empty,
     )
     private val fullCrossesBoard = listOf(
-        Cell.Cross, Cell.Cross, Cell.Cross,
-        Cell.Cross, Cell.Cross, Cell.Cross,
-        Cell.Cross, Cell.Cross, Cell.Cross,
+        CellState.Cross, CellState.Cross, CellState.Cross,
+        CellState.Cross, CellState.Cross, CellState.Cross,
+        CellState.Cross, CellState.Cross, CellState.Cross,
     )
     private val fullCirclesBoard = listOf(
-        Cell.Circle, Cell.Circle, Cell.Circle,
-        Cell.Circle, Cell.Circle, Cell.Circle,
-        Cell.Circle, Cell.Circle, Cell.Circle,
+        CellState.Circle, CellState.Circle, CellState.Circle,
+        CellState.Circle, CellState.Circle, CellState.Circle,
+        CellState.Circle, CellState.Circle, CellState.Circle,
     )
 
     private val circleWinsBoard1 = listOf(
-        Cell.Circle, Cell.Circle, Cell.Circle, //here
-        Cell.Empty, Cell.Cross, Cell.Cross,
-        Cell.Empty, Cell.Empty, Cell.Empty,
+        CellState.Circle, CellState.Circle, CellState.Circle, //here
+        CellState.Empty, CellState.Cross, CellState.Cross,
+        CellState.Empty, CellState.Empty, CellState.Empty,
     )
     private val circleWinsBoard2 = listOf(
-        Cell.Empty, Cell.Cross, Cell.Cross,
-        Cell.Circle, Cell.Circle, Cell.Circle, //here
-        Cell.Empty, Cell.Empty, Cell.Empty,
+        CellState.Empty, CellState.Cross, CellState.Cross,
+        CellState.Circle, CellState.Circle, CellState.Circle, //here
+        CellState.Empty, CellState.Empty, CellState.Empty,
     )
     private val circleWinsBoard3 = listOf(
-        Cell.Empty, Cell.Cross, Cell.Cross,
-        Cell.Empty, Cell.Cross, Cell.Empty,
-        Cell.Circle, Cell.Circle, Cell.Circle, //here
+        CellState.Empty, CellState.Cross, CellState.Cross,
+        CellState.Empty, CellState.Cross, CellState.Empty,
+        CellState.Circle, CellState.Circle, CellState.Circle, //here
     )
 
     private val crossWinsBoard1 = listOf(
-        Cell.Cross, Cell.Cross, Cell.Cross, //here
-        Cell.Empty, Cell.Circle, Cell.Circle,
-        Cell.Empty, Cell.Empty, Cell.Empty,
+        CellState.Cross, CellState.Cross, CellState.Cross, //here
+        CellState.Empty, CellState.Circle, CellState.Circle,
+        CellState.Empty, CellState.Empty, CellState.Empty,
     )
     private val crossWinsBoard2 = listOf(
-        Cell.Empty, Cell.Circle, Cell.Circle,
-        Cell.Cross, Cell.Cross, Cell.Cross, //here
-        Cell.Empty, Cell.Empty, Cell.Empty,
+        CellState.Empty, CellState.Circle, CellState.Circle,
+        CellState.Cross, CellState.Cross, CellState.Cross, //here
+        CellState.Empty, CellState.Empty, CellState.Empty,
     )
     private val crossWinsBoard3 = listOf(
-        Cell.Empty, Cell.Circle, Cell.Circle,
-        Cell.Empty, Cell.Circle, Cell.Empty,
-        Cell.Cross, Cell.Cross, Cell.Cross, //here
+        CellState.Empty, CellState.Circle, CellState.Circle,
+        CellState.Empty, CellState.Circle, CellState.Empty,
+        CellState.Cross, CellState.Cross, CellState.Cross, //here
     )
 
     private val continueBoard1 = listOf(
-        Cell.Cross, Cell.Circle, Cell.Cross,
-        Cell.Empty, Cell.Empty, Cell.Empty,
-        Cell.Empty, Cell.Empty, Cell.Empty,
+        CellState.Cross, CellState.Circle, CellState.Cross,
+        CellState.Empty, CellState.Empty, CellState.Empty,
+        CellState.Empty, CellState.Empty, CellState.Empty,
     )
     private val continueBoard2 = listOf(
-        Cell.Empty, Cell.Circle, Cell.Empty,
-        Cell.Circle, Cell.Cross, Cell.Cross,
-        Cell.Circle, Cell.Cross, Cell.Empty,
+        CellState.Empty, CellState.Circle, CellState.Empty,
+        CellState.Circle, CellState.Cross, CellState.Cross,
+        CellState.Circle, CellState.Cross, CellState.Empty,
     )
     private val continueBoard3 = listOf(
-        Cell.Circle, Cell.Circle, Cell.Empty,
-        Cell.Cross, Cell.Cross, Cell.Circle,
-        Cell.Cross, Cell.Circle, Cell.Cross,
+        CellState.Circle, CellState.Circle, CellState.Empty,
+        CellState.Cross, CellState.Cross, CellState.Circle,
+        CellState.Cross, CellState.Circle, CellState.Cross,
     )
 
     private val drawBoard1 = listOf(
-        Cell.Circle, Cell.Cross, Cell.Circle,
-        Cell.Circle, Cell.Cross, Cell.Cross,
-        Cell.Cross, Cell.Circle, Cell.Cross,
+        CellState.Circle, CellState.Cross, CellState.Circle,
+        CellState.Circle, CellState.Cross, CellState.Cross,
+        CellState.Cross, CellState.Circle, CellState.Cross,
     )
     private val drawBoard2 = listOf(
-        Cell.Cross, Cell.Circle, Cell.Cross,
-        Cell.Circle, Cell.Cross, Cell.Cross,
-        Cell.Circle, Cell.Cross, Cell.Circle,
+        CellState.Cross, CellState.Circle, CellState.Cross,
+        CellState.Circle, CellState.Cross, CellState.Cross,
+        CellState.Circle, CellState.Cross, CellState.Circle,
     )
     private val drawBoard3 = listOf(
-        Cell.Cross, Cell.Circle, Cell.Cross,
-        Cell.Cross, Cell.Cross, Cell.Circle,
-        Cell.Circle, Cell.Cross, Cell.Circle,
+        CellState.Cross, CellState.Circle, CellState.Cross,
+        CellState.Cross, CellState.Cross, CellState.Circle,
+        CellState.Circle, CellState.Cross, CellState.Circle,
     )
 
     //unreal cases
     @Test
     fun `full empty board returns CONTINEUE`() {
         val result = checkGameState(emptyBoard)
-        assertThat(result).isEqualTo(GameCheckResult.Continue(LineState.Empty))
+        assertThat(result).isEqualTo(GameCheckResult.Incomplete(LineState.Empty))
     }
 
     @Test
@@ -147,19 +147,19 @@ class UtilTest {
     @Test
     fun `first case of different figures and not full board returns CONTINUE`() {
         val result = checkGameState(continueBoard1)
-        assertThat(result).isEqualTo(GameCheckResult.Continue(LineState.Empty))
+        assertThat(result).isEqualTo(GameCheckResult.Incomplete(LineState.Empty))
     }
 
     @Test
     fun `second case of different figures and not full board returns CONTINUE`() {
         val result = checkGameState(continueBoard2)
-        assertThat(result).isEqualTo(GameCheckResult.Continue(LineState.Empty))
+        assertThat(result).isEqualTo(GameCheckResult.Incomplete(LineState.Empty))
     }
 
     @Test
     fun `third case of different figures and not full board returns CONTINUE`() {
         val result = checkGameState(continueBoard3)
-        assertThat(result).isEqualTo(GameCheckResult.Continue(LineState.Empty))
+        assertThat(result).isEqualTo(GameCheckResult.Incomplete(LineState.Empty))
     }
 
     //draw

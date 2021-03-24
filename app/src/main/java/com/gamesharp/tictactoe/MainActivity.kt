@@ -32,11 +32,11 @@ class MainActivity : ComponentActivity() {
             TicTacToeTheme {
                 Surface(color = MaterialTheme.colors.surface, modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Info(viewModel)
+                        Info()
                         if (viewModel.isGameEnded.collectAsState().value) {
-                            Outcome(viewModel)
+                            Outcome()
                         } else {
-                            Playground(viewModel)
+                            Playground()
                         }
                         Button(
                             colors = ButtonDefaults.buttonColors(MaterialTheme.colors.onSurface),

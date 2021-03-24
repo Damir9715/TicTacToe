@@ -13,10 +13,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gamesharp.tictactoe.MainViewModel
 
 @Composable
-fun Info(viewModel: MainViewModel) {
+fun Info() {
+    val viewModel: MainViewModel = viewModel()
     val gameState = viewModel.gameStateText.collectAsState().value
 
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {

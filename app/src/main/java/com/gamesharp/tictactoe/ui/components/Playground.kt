@@ -11,18 +11,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
-import com.gamesharp.tictactoe.Cell
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gamesharp.tictactoe.CellState
 import com.gamesharp.tictactoe.LineState
 import com.gamesharp.tictactoe.MainViewModel
 import com.gamesharp.tictactoe.PLAYGROUND_SIZE
 
 @Composable
-fun Playground(
-    viewModel: MainViewModel,
-) {
+fun Playground() {
+    val viewModel: MainViewModel = viewModel()
     Box(Modifier.padding(top = 50.dp), contentAlignment = Alignment.Center) {
         val color = when (viewModel.setLineColor.collectAsState().value) {
-            is Cell.Circle -> MaterialTheme.colors.onSecondary
+            is CellState.Circle -> MaterialTheme.colors.onSecondary
             else -> MaterialTheme.colors.secondary
         }
         val lineState = viewModel.drawLine.collectAsState().value

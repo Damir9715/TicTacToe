@@ -19,7 +19,7 @@ fun Figure(
     index: Int,
 ) {
     //fixme recomposes for each click, skip not clicked cells
-    val board: List<Cell> by viewModel.board.collectAsState()
+    val board: List<CellState> by viewModel.board.collectAsState()
     val cell = board[index]
 
     Box(
@@ -27,20 +27,20 @@ fun Figure(
             .size(CELL_SIZE)
             .fillMaxWidth()
             .clickable(enabled = viewModel.isFigureClickable.collectAsState().value) {
-                if (cell == Cell.Empty) {
+                if (cell == CellState.Empty) {
                     viewModel.onClick(ClickData(index, viewModel.currentPlayer.value))
                 }
             },
         contentAlignment = Alignment.Center
     ) {
         when (cell) {
-            is Cell.Empty -> Unit
-            is Cell.Circle -> Image(
+            is CellState.Empty -> Unit
+            is CellState.Circle -> Image(
                 painter = painterResource(R.drawable.ic_circle),
                 contentDescription = null,
                 modifier = Modifier.size(FIGURE_SIZE)
             )
-            is Cell.Cross -> Image(
+            is CellState.Cross -> Image(
                 painter = painterResource(R.drawable.ic_cross),
                 contentDescription = null,
                 modifier = Modifier.size(FIGURE_SIZE)
