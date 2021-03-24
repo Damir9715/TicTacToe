@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.gamesharp.tictactoe.LINE_WIDTH
-import com.gamesharp.tictactoe.PLAYGROUND_SIZE
+import androidx.compose.ui.unit.dp
+
+private val LINE_WIDTH = 8.dp
 
 @Composable
 fun Dividers() {

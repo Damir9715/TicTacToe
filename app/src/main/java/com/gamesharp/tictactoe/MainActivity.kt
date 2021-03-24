@@ -16,11 +16,6 @@ import com.gamesharp.tictactoe.ui.components.Outcome
 import com.gamesharp.tictactoe.ui.components.Playground
 import com.gamesharp.tictactoe.ui.theme.TicTacToeTheme
 
-val LINE_WIDTH = 8.dp
-val PLAYGROUND_SIZE = 324.dp
-val CELL_SIZE = 108.dp
-val FIGURE_SIZE = 80.dp
-
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<MainViewModel>()

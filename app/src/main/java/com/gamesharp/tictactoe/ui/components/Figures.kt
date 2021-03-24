@@ -3,10 +3,6 @@ package com.gamesharp.tictactoe.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gamesharp.tictactoe.CELL_SIZE
-import com.gamesharp.tictactoe.MainViewModel
-import com.gamesharp.tictactoe.PLAYGROUND_SIZE
 
 @Composable
 fun Figures() {
@@ -32,7 +28,8 @@ fun Figures() {
         Row(
             Modifier
                 .height(CELL_SIZE)
-                .fillMaxWidth()) {
+                .fillMaxWidth()
+        ) {
             Figure(6)
             Figure(7)
             Figure(8)

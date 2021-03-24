@@ -13,16 +13,16 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-
     val board = Board(scope = viewModelScope)
 
-    val setLineColor: MutableStateFlow<CellState> = MutableStateFlow(CellState.Empty)
     val drawLine: MutableStateFlow<LineState> = MutableStateFlow(LineState.Empty)
 
     val gameStateText = MutableStateFlow("Start game 'X'")
+
     val currentPlayer: MutableStateFlow<CellState> = MutableStateFlow(CellState.Cross)
 
     val isOutcomeVisible = MutableStateFlow(false)
+
     private val showOutcome = MutableSharedFlow<Unit>()
 
     fun onClick(index: Int, cellState: CellState) {
@@ -71,19 +71,16 @@ class MainViewModel : ViewModel() {
                     }
                     is BoardState.CircleWon -> {
                         gameStateText.emit("Game over")
-                        setLineColor.emit(CellState.Circle)
-                        drawLine.emit(boardState.state)
+                        drawLine.emit(boardState.lineState)
                         showOutcome.emit(Unit)
                     }
                     is BoardState.CrossWon -> {
                         gameStateText.emit("Game over")
-                        setLineColor.emit(CellState.Cross)
-                        drawLine.emit(boardState.state)
+                        drawLine.emit(boardState.lineState)
                         showOutcome.emit(Unit)
                     }
                     is BoardState.Draw -> {
                         gameStateText.emit("Game over")
-                        setLineColor.emit(CellState.Empty)
                         showOutcome.emit(Unit)
                     }
                 }

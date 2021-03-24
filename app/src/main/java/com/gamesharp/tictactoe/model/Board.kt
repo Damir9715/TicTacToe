@@ -17,7 +17,7 @@ class Board(
 ) {
 
     val boardState: MutableStateFlow<BoardState> =
-        MutableStateFlow(BoardState.Incomplete(LineState.Empty))
+        MutableStateFlow(BoardState.Incomplete)
 
     init {
         scope.launch {
@@ -29,7 +29,7 @@ class Board(
 
     private fun checkBoardState(cells: List<CellState>): BoardState {
         if (cells.filterNot { it == CellState.Empty }.count() < 5) {
-            return BoardState.Incomplete(LineState.Empty)
+            return BoardState.Incomplete
         }
 
         //rows
@@ -64,9 +64,9 @@ class Board(
 
         //end
         return if (cells.filter { it == CellState.Empty }.count() == 0) {
-            BoardState.Draw(LineState.Empty)
+            BoardState.Draw
         } else {
-            BoardState.Incomplete(LineState.Empty)
+            BoardState.Incomplete
         }
     }
 
@@ -76,10 +76,9 @@ class Board(
         }
     }
 
-    private fun toResult(cellState: CellState, state: LineState) = when (cellState) {
-        is CellState.Circle -> BoardState.CircleWon(state)
-        is CellState.Cross -> BoardState.CrossWon(state)
-        //never
-        else -> BoardState.Incomplete(LineState.Empty)
+    private fun toResult(cellState: CellState, lineState: LineState) = when (cellState) {
+        is CellState.Circle -> BoardState.CircleWon(lineState)
+        is CellState.Cross -> BoardState.CrossWon(lineState)
+        is CellState.Empty -> BoardState.Incomplete
     }
 }

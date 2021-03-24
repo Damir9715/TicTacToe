@@ -11,14 +11,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.gamesharp.tictactoe.CELL_SIZE
-import com.gamesharp.tictactoe.FIGURE_SIZE
 import com.gamesharp.tictactoe.MainViewModel
 import com.gamesharp.tictactoe.R
 import com.gamesharp.tictactoe.model.BoardState
 import com.gamesharp.tictactoe.model.CellState
-import com.gamesharp.tictactoe.model.LineState
+
+val CELL_SIZE = 108.dp
+private val FIGURE_SIZE = 80.dp
 
 @Composable
 fun Figure(index: Int) {
@@ -26,8 +27,7 @@ fun Figure(index: Int) {
     val viewModel: MainViewModel = viewModel()
     val board by viewModel.board.cells.collectAsState()
     val cell = board[index]
-    val enabled =
-        viewModel.board.boardState.collectAsState().value == BoardState.Incomplete(LineState.Empty)
+    val enabled = viewModel.board.boardState.collectAsState().value == BoardState.Incomplete
 
     Box(
         modifier = Modifier
