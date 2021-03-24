@@ -1,6 +1,8 @@
 package com.gamesharp.tictactoe.model
 
+import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -13,20 +15,28 @@ private val emptyBoard = listOf<CellState>(
 
 class Board(
     val cells: MutableStateFlow<List<CellState>> = MutableStateFlow(emptyBoard),
-    private val scope: CoroutineScope
+    scope: CoroutineScope
 ) {
 
-    val boardState: MutableStateFlow<BoardState> =
-        MutableStateFlow(BoardState.Incomplete)
+    val state: MutableStateFlow<BoardState> = MutableStateFlow(BoardState.Incomplete)
+
+    val reset = MutableSharedFlow<Unit>()
 
     init {
         scope.launch {
             cells.collect { cells ->
-                boardState.emit(checkBoardState(cells))
+                state.emit(checkBoardState(cells))
+            }
+        }
+
+        scope.launch {
+            reset.collect {
+                cells.emit(emptyBoard)
             }
         }
     }
 
+    @VisibleForTesting
     private fun checkBoardState(cells: List<CellState>): BoardState {
         if (cells.filterNot { it == CellState.Empty }.count() < 5) {
             return BoardState.Incomplete
@@ -67,12 +77,6 @@ class Board(
             BoardState.Draw
         } else {
             BoardState.Incomplete
-        }
-    }
-
-    fun resetBoard() {
-        scope.launch {
-            cells.emit(emptyBoard)
         }
     }
 

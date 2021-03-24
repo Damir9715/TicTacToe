@@ -22,7 +22,7 @@ val PLAYGROUND_SIZE = 324.dp
 @Composable
 fun Playground() {
     val viewModel: MainViewModel = viewModel()
-    val color = when (viewModel.board.boardState.collectAsState().value) {
+    val color = when (viewModel.boardState.collectAsState().value) {
         is BoardState.CircleWon -> MaterialTheme.colors.onSecondary
         else -> MaterialTheme.colors.secondary
     }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -17,6 +18,7 @@ import com.gamesharp.tictactoe.MainViewModel
 import com.gamesharp.tictactoe.R
 import com.gamesharp.tictactoe.model.BoardState
 import com.gamesharp.tictactoe.model.CellState
+import kotlinx.coroutines.launch
 
 val CELL_SIZE = 108.dp
 private val FIGURE_SIZE = 80.dp
@@ -25,9 +27,10 @@ private val FIGURE_SIZE = 80.dp
 fun Figure(index: Int) {
     //fixme recomposes for each click, skip not clicked cells
     val viewModel: MainViewModel = viewModel()
-    val board by viewModel.board.cells.collectAsState()
+    val board by viewModel.cells.collectAsState()
     val cell = board[index]
-    val enabled = viewModel.board.boardState.collectAsState().value == BoardState.Incomplete
+    val enabled = viewModel.boardState.collectAsState().value == BoardState.Incomplete
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier
@@ -35,7 +38,9 @@ fun Figure(index: Int) {
             .fillMaxWidth()
             .clickable(enabled = enabled) {
                 if (cell == CellState.Empty) {
-                    viewModel.onClick(index, viewModel.currentPlayer.value)
+                    scope.launch {
+                        viewModel.click.emit(index to viewModel.currentPlayer.value)
+                    }
                 }
             },
         contentAlignment = Alignment.Center

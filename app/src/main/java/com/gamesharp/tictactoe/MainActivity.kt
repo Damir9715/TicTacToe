@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +16,7 @@ import com.gamesharp.tictactoe.ui.components.Info
 import com.gamesharp.tictactoe.ui.components.Outcome
 import com.gamesharp.tictactoe.ui.components.Playground
 import com.gamesharp.tictactoe.ui.theme.TicTacToeTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -26,6 +28,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             TicTacToeTheme {
                 Surface(color = MaterialTheme.colors.surface, modifier = Modifier.fillMaxSize()) {
+                    val scope = rememberCoroutineScope()
+
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Info()
                         if (viewModel.isOutcomeVisible.collectAsState().value) {
@@ -39,7 +43,11 @@ class MainActivity : ComponentActivity() {
                                 .padding(top = 40.dp)
                                 .height(50.dp)
                                 .width(100.dp),
-                            onClick = viewModel::onReset
+                            onClick = {
+                                scope.launch {
+                                    viewModel.reset.emit(Unit)
+                                }
+                            }
                         ) {
                             Text(
                                 text = "Retry",

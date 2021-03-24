@@ -29,7 +29,7 @@ fun Outcome() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        when (viewModel.board.boardState.collectAsState().value) {
+        when (viewModel.boardState.collectAsState().value) {
             is BoardState.Incomplete -> Unit
             is BoardState.CircleWon -> {
                 Image(

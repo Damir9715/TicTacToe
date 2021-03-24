@@ -13,7 +13,15 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    val board = Board(scope = viewModelScope)
+    private val board = Board(scope = viewModelScope)
+
+    private val showOutcome = MutableSharedFlow<Unit>()
+
+    val cells = MutableStateFlow(emptyList<CellState>())
+
+    val isOutcomeVisible = MutableStateFlow(false)
+
+    val boardState: MutableStateFlow<BoardState> = MutableStateFlow(BoardState.Incomplete)
 
     val drawLine: MutableStateFlow<LineState> = MutableStateFlow(LineState.Empty)
 
@@ -21,48 +29,22 @@ class MainViewModel : ViewModel() {
 
     val currentPlayer: MutableStateFlow<CellState> = MutableStateFlow(CellState.Cross)
 
-    val isOutcomeVisible = MutableStateFlow(false)
+    val reset = MutableSharedFlow<Unit>()
 
-    private val showOutcome = MutableSharedFlow<Unit>()
-
-    fun onClick(index: Int, cellState: CellState) {
-        viewModelScope.launch {
-            updateCurrentPlayer()
-            setCell(index, cellState)
-        }
-    }
-
-    private fun setCell(index: Int, cellState: CellState) {
-        viewModelScope.launch {
-            val temp = mutableListOf<CellState>()
-            temp.addAll(board.cells.value)
-            temp[index] = cellState
-            board.cells.emit(temp)
-        }
-    }
-
-    private fun updateCurrentPlayer() {
-        viewModelScope.launch {
-            if (currentPlayer.value == CellState.Cross) {
-                currentPlayer.emit(CellState.Circle)
-                gameStateText.emit("O Turn")
-            } else {
-                currentPlayer.emit(CellState.Cross)
-                gameStateText.emit("X Turn")
-            }
-        }
-    }
-
-    fun onReset() {
-        viewModelScope.launch {
-            board.resetBoard()
-        }
-    }
+    val click = MutableSharedFlow<Pair<Int, CellState>>()
 
     init {
         viewModelScope.launch {
-            board.boardState.collect { boardState ->
-                when (boardState) {
+            board.cells.collect {
+                cells.emit(it)
+            }
+        }
+
+        viewModelScope.launch {
+            board.state.collect { state ->
+                boardState.emit(state)
+
+                when (state) {
                     is BoardState.Incomplete -> {
                         isOutcomeVisible.emit(false)
                         drawLine.emit(LineState.Empty)
@@ -71,12 +53,12 @@ class MainViewModel : ViewModel() {
                     }
                     is BoardState.CircleWon -> {
                         gameStateText.emit("Game over")
-                        drawLine.emit(boardState.lineState)
+                        drawLine.emit(state.lineState)
                         showOutcome.emit(Unit)
                     }
                     is BoardState.CrossWon -> {
                         gameStateText.emit("Game over")
-                        drawLine.emit(boardState.lineState)
+                        drawLine.emit(state.lineState)
                         showOutcome.emit(Unit)
                     }
                     is BoardState.Draw -> {
@@ -88,9 +70,32 @@ class MainViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
+            click.collect { (index, cellState) ->
+                val temp = mutableListOf<CellState>()
+                temp.addAll(board.cells.value)
+                temp[index] = cellState
+                board.cells.emit(temp)
+
+                if (currentPlayer.value == CellState.Cross) {
+                    currentPlayer.emit(CellState.Circle)
+                    gameStateText.emit("O Turn")
+                } else {
+                    currentPlayer.emit(CellState.Cross)
+                    gameStateText.emit("X Turn")
+                }
+            }
+        }
+
+        viewModelScope.launch {
             showOutcome.collect {
                 delay(1000)
                 isOutcomeVisible.emit(true)
+            }
+        }
+
+        viewModelScope.launch {
+            reset.collect {
+                board.reset.emit(Unit)
             }
         }
     }
