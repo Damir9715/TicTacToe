@@ -26,8 +26,8 @@ fun Figure(
     index: Int,
 ) {
     //fixme recomposes for each click, skip not clicked cells
-    val board by viewModel.board.collectAsState()
-    val cell = board.board[index]
+    val board by viewModel.board.cells.collectAsState()
+    val cell = board[index]
 
     Box(
         modifier = Modifier
