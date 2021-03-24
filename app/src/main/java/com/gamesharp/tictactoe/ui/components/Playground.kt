@@ -28,7 +28,7 @@ fun Playground() {
         val lineState = viewModel.drawLine.collectAsState().value
 
         Dividers()
-        Figures(viewModel)
+        Figures()
         Canvas(modifier = Modifier.size(PLAYGROUND_SIZE)) {
             val lineLength = size.width
             val oneSixth = lineLength / 6

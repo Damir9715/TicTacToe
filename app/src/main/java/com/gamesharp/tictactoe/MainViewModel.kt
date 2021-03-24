@@ -2,28 +2,28 @@ package com.gamesharp.tictactoe
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gamesharp.tictactoe.model.*
+import com.gamesharp.tictactoe.model.Board
+import com.gamesharp.tictactoe.model.BoardState
+import com.gamesharp.tictactoe.model.CellState
+import com.gamesharp.tictactoe.model.LineState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-
-private const val ENDING_DELAY = 1000L
 
 class MainViewModel : ViewModel() {
 
     val board = Board(scope = viewModelScope)
 
-    private val gameState = MutableStateFlow<GameState>(GameState.Start)
     val setLineColor: MutableStateFlow<CellState> = MutableStateFlow(CellState.Empty)
     val drawLine: MutableStateFlow<LineState> = MutableStateFlow(LineState.Empty)
 
     val gameStateText = MutableStateFlow("Start game 'X'")
     val currentPlayer: MutableStateFlow<CellState> = MutableStateFlow(CellState.Cross)
-    //todo bug
-    val isResetClickable = MutableStateFlow(false)
-    val isFigureClickable = MutableStateFlow(true)
-    val isGameEnded = MutableStateFlow(false)
+
+    val isOutcomeVisible = MutableStateFlow(false)
+    private val showOutcome = MutableSharedFlow<Unit>()
 
     fun onClick(index: Int, cellState: CellState) {
         viewModelScope.launch {
@@ -55,69 +55,45 @@ class MainViewModel : ViewModel() {
 
     fun onReset() {
         viewModelScope.launch {
-            gameState.emit(GameState.Start)
+            board.resetBoard()
         }
     }
 
     init {
         viewModelScope.launch {
-            gameState.collect {
-                when (it) {
-                    is GameState.Start -> {
-                        board.resetBoard()
+            board.boardState.collect { boardState ->
+                when (boardState) {
+                    is BoardState.Incomplete -> {
+                        isOutcomeVisible.emit(false)
                         drawLine.emit(LineState.Empty)
                         gameStateText.emit("X Turn")
-                        isGameEnded.emit(false)
-                        isFigureClickable.emit(true)
-                        isResetClickable.emit(true)
                         currentPlayer.emit(CellState.Cross)
                     }
-                    is GameState.Game -> {
-                        isResetClickable.emit(true)
-                    }
-                    is GameState.Ending -> {
-                        //fixme remove, come up with better ux
-                        isResetClickable.emit(false)
+                    is BoardState.CircleWon -> {
                         gameStateText.emit("Game over")
-                        isFigureClickable.emit(false)
+                        setLineColor.emit(CellState.Circle)
+                        drawLine.emit(boardState.state)
+                        showOutcome.emit(Unit)
                     }
-                    is GameState.Result -> {
-                        //fixme remove, come up with better ux
-                        isResetClickable.emit(true)
-                        isGameEnded.emit(true)
+                    is BoardState.CrossWon -> {
+                        gameStateText.emit("Game over")
+                        setLineColor.emit(CellState.Cross)
+                        drawLine.emit(boardState.state)
+                        showOutcome.emit(Unit)
+                    }
+                    is BoardState.Draw -> {
+                        gameStateText.emit("Game over")
+                        setLineColor.emit(CellState.Empty)
+                        showOutcome.emit(Unit)
                     }
                 }
             }
         }
 
         viewModelScope.launch {
-            board.boardState.collect { boardState ->
-                when (boardState) {
-                    is BoardState.Incomplete -> gameState.emit(GameState.Game)
-                    is BoardState.CircleWon -> {
-                        setLineColor.emit(CellState.Circle)
-                        drawLine.emit(boardState.state)
-
-                        gameState.emit(GameState.Ending)
-                        delay(ENDING_DELAY)
-                        gameState.emit(GameState.Result)
-                    }
-                    is BoardState.CrossWon -> {
-                        setLineColor.emit(CellState.Cross)
-                        drawLine.emit(boardState.state)
-
-                        gameState.emit(GameState.Ending)
-                        delay(ENDING_DELAY)
-                        gameState.emit(GameState.Result)
-                    }
-                    is BoardState.Draw -> {
-                        setLineColor.emit(CellState.Empty)
-
-                        gameState.emit(GameState.Ending)
-                        delay(ENDING_DELAY)
-                        gameState.emit(GameState.Result)
-                    }
-                }
+            showOutcome.collect {
+                delay(1000)
+                isOutcomeVisible.emit(true)
             }
         }
     }

@@ -10,30 +10,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
-import androidx.lifecycle.findViewTreeLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import com.gamesharp.tictactoe.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.gamesharp.tictactoe.CELL_SIZE
+import com.gamesharp.tictactoe.FIGURE_SIZE
+import com.gamesharp.tictactoe.MainViewModel
+import com.gamesharp.tictactoe.R
+import com.gamesharp.tictactoe.model.BoardState
 import com.gamesharp.tictactoe.model.CellState
-import kotlinx.coroutines.coroutineScope
-import kotlin.coroutines.coroutineContext
+import com.gamesharp.tictactoe.model.LineState
 
 @Composable
-fun Figure(
-    viewModel: MainViewModel,
-    index: Int,
-) {
+fun Figure(index: Int) {
     //fixme recomposes for each click, skip not clicked cells
+    val viewModel: MainViewModel = viewModel()
     val board by viewModel.board.cells.collectAsState()
     val cell = board[index]
+    val enabled =
+        viewModel.board.boardState.collectAsState().value == BoardState.Incomplete(LineState.Empty)
 
     Box(
         modifier = Modifier
             .size(CELL_SIZE)
             .fillMaxWidth()
-            .clickable(enabled = viewModel.isFigureClickable.collectAsState().value) {
+            .clickable(enabled = enabled) {
                 if (cell == CellState.Empty) {
                     viewModel.onClick(index, viewModel.currentPlayer.value)
                 }

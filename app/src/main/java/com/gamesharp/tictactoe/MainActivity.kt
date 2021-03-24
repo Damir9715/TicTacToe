@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 Surface(color = MaterialTheme.colors.surface, modifier = Modifier.fillMaxSize()) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Info()
-                        if (viewModel.isGameEnded.collectAsState().value) {
+                        if (viewModel.isOutcomeVisible.collectAsState().value) {
                             Outcome()
                         } else {
                             Playground()
@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
                                 .padding(top = 40.dp)
                                 .height(50.dp)
                                 .width(100.dp),
-                            enabled = viewModel.isResetClickable.collectAsState().value,
                             onClick = viewModel::onReset
                         ) {
                             Text(
