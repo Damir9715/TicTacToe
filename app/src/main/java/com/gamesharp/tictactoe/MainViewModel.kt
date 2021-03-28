@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    private val board = Board(scope = viewModelScope)
+    private val board: Board = Board.Default(scope = viewModelScope)
 
     private val showOutcome = MutableSharedFlow<Unit>()
 
@@ -71,10 +71,7 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch {
             click.collect { (index, cellState) ->
-                val temp = mutableListOf<CellState>()
-                temp.addAll(board.cells.value)
-                temp[index] = cellState
-                board.cells.emit(temp)
+                board.addItem.emit(index to cellState)
 
                 if (currentPlayer.value == CellState.Cross) {
                     currentPlayer.emit(CellState.Circle)
@@ -95,7 +92,7 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch {
             reset.collect {
-                board.reset.emit(Unit)
+                board.clear.emit(Unit)
             }
         }
     }
