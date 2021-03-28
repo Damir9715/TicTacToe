@@ -15,35 +15,27 @@ fun Dividers() {
         modifier = Modifier.size(PLAYGROUND_SIZE),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(LINE_WIDTH)
-                .background(MaterialTheme.colors.onSurface)
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(LINE_WIDTH)
-                .background(MaterialTheme.colors.onSurface)
-        )
+        repeat(2) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(LINE_WIDTH)
+                    .background(MaterialTheme.colors.onSurface)
+            )
+        }
     }
 
     Row(
         modifier = Modifier.size(PLAYGROUND_SIZE),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Box(
-            modifier = Modifier
-                .width(LINE_WIDTH)
-                .fillMaxHeight()
-                .background(MaterialTheme.colors.onSurface)
-        )
-        Box(
-            modifier = Modifier
-                .width(LINE_WIDTH)
-                .fillMaxHeight()
-                .background(MaterialTheme.colors.onSurface)
-        )
+        repeat(2) {
+            Box(
+                modifier = Modifier
+                    .width(LINE_WIDTH)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colors.onSurface)
+            )
+        }
     }
 }
