@@ -5,6 +5,13 @@ import com.gamesharp.tictactoe.model.BoardState
 import com.gamesharp.tictactoe.model.CellState
 import com.gamesharp.tictactoe.model.LineState
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
 class BoardTest {
@@ -88,6 +95,26 @@ class BoardTest {
         CellState.Cross, CellState.Cross, CellState.Circle,
         CellState.Circle, CellState.Cross, CellState.Circle,
     )
+
+    @ExperimentalCoroutinesApi
+    private val testDispatcher = TestCoroutineDispatcher()
+
+    @InternalCoroutinesApi
+    @ExperimentalCoroutinesApi
+    @Test
+    fun testBoard() {
+        testDispatcher.runBlockingTest {
+            val board: Board = Board.Default(CoroutineScope(testDispatcher))
+            CoroutineScope(testDispatcher).launch {
+                board.addItem.emit(0 to CellState.Circle)
+            }.join()
+            board.state.collect {
+                assertThat(it).isEqualTo(BoardState.Incomplete)
+            }
+        }
+
+        testDispatcher.cleanupTestCoroutines()
+    }
 
     //unreal cases
 //    @Test
