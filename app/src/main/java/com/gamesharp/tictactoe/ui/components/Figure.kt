@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,12 +26,13 @@ private val FIGURE_SIZE = 80.dp
 fun Figure(index: Int, cellState: CellState) {
     val viewModel: MainViewModel = viewModel()
     val scope = rememberCoroutineScope()
+    val currentBoardState = viewModel.boardState.collectAsState()
 
     Box(
         modifier = Modifier
             .size(CELL_SIZE)
             .fillMaxWidth()
-            .clickable(enabled = viewModel.boardState.value == BoardState.Incomplete) {
+            .clickable(enabled = currentBoardState.value == BoardState.Incomplete) {
                 if (cellState == CellState.Empty) {
                     scope.launch {
                         viewModel.click.emit(index to viewModel.currentPlayer.value)

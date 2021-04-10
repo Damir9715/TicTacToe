@@ -18,6 +18,7 @@ import com.gamesharp.tictactoe.ui.components.Playground
 import com.gamesharp.tictactoe.ui.theme.TicTacToeTheme
 import kotlinx.coroutines.launch
 
+// FIX unexpected behavior on double click 'retry' when DRAW state
 class MainActivity : ComponentActivity() {
 
     private val viewModel by viewModels<MainViewModel>()
